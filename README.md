@@ -1,5 +1,15 @@
 # Notebook
 
+```
+def init(filename):
+    from bs4 import BeautifulSoup as bf
+    import requests, json
+    response = requests.get(f"https://gitlab.com/vaisakh678/Notebooks/-/raw/main/{filename}")
+    return json.loads(str(bf(response.content, "html.parser")))
+
+txt = init("whole.json"
+```
+
 <p>To check notebook is running on google colab or not. </p>
 
 ```
@@ -11,15 +21,6 @@ def isColab():
 ```
 <p>Basic config..</p>
 
-```
-def init(filename):
-    from bs4 import BeautifulSoup as bf
-    import requests, json
-    response = requests.get(f"https://gitlab.com/vaisakh678/Notebooks/-/raw/main/{filename}")
-    return json.loads(str(bf(response.content, "html.parser")))
-
-txt = init("whole.json"
-```
 
 ```
 # config..
