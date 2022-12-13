@@ -7,7 +7,7 @@ def init(filename):
     response = requests.get(f"https://gitlab.com/vaisakh678/Notebooks/-/raw/main/{filename}")
     return json.loads(str(bf(response.content, "html.parser")))
 
-txt = init("whole.json"
+txt = init("whole.json")
 ```
 
 <p>To check notebook is running on google colab or not. </p>
