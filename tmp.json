@@ -1,0 +1,30 @@
+{
+    "sentiment": [
+        "sr/bin/env python\n# coding: utf-8",
+        "from keras_preprocessing.sequence import pad_sequences\nfrom keras.preprocessing.text import Tokenizer\nfrom keras.metrics import accuracy\nfrom keras import layers\nfrom keras.models import Sequential\nfrom sklearn.feature_extraction.text import CountVectorizer\nfrom sklearn.model_selection import train_test_split\nimport tensorflow as tf\nimport pandas as pd\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense, Dropout, LSTM, SimpleRNN",
+        "filepath = \"/Users/vaisakh/programs/Notebooks/dataset/Labelled Yelp Dataset.csv\"\ndf = pd.read_csv(filepath, names=[\"Review\", \"label\"], sep=\"\\t\")\ndf",
+        "review = df[\"Review\"].values\ny = df[\"label\"].values\nreview_train, review_test, y_train, y_test = train_test_split(\n    review, y, test_size=0.25, random_state=1000)",
+        "vectorizer = CountVectorizer()\nvectorizer.fit(review_train)\n\nX_train = vectorizer.transform(review_train)\nX_test = vectorizer.transform(review_test)\nX_train",
+        "X_train.shape",
+        "# Model1\n\n\ninput_dim = X_train.shape[1]\n\nmodel1 = Sequential()\nmodel1.add(layers.Dense(10, input_dim=input_dim, activation=\"relu\"))\nmodel1.add(layers.Dense(1, activation=\"sigmoid\"))",
+        "model1.compile(loss=\"binary_crossentropy\",\n               optimizer=\"adam\", metrics=[\"accuracy\"])\nmodel1.summary()",
+        "history = model1.fit(X_train, y_train,\n                     epochs=2,\n\n                     validation_data=(X_test, y_test),\n                     batch_size=10)",
+        "loss, accuracy = model1.evaluate(X_train, y_train)\nprint(\"Training Accuracy : \", format(accuracy))\n\nloss, accuracy = model1.evaluate(X_test, y_test)\nprint(\"Test Accuracy : \", format(accuracy))",
+        "tokenizer = Tokenizer(num_words=5000)\ntokenizer.fit_on_texts(review_train)\n\nX_train = tokenizer.texts_to_sequences(review_train)\nX_test = tokenizer.texts_to_sequences(review_test)\n\nvocab_size = len(tokenizer.word_index) + 1\nprint(review_train[500])\nprint(X_train[500])\nprint(vocab_size)",
+        "maxlen = 100\n\nX_train = pad_sequences(X_train, padding=\"post\", maxlen=maxlen)\nX_test = pad_sequences(X_test, padding=\"post\", maxlen=maxlen)",
+        "# Model 2\n\nembedding_dem = 50\n\nmodel2 = Sequential()\nmodel2.add(layers.Embedding(input_dim=vocab_size,\n                            output_dim=embedding_dem,\n                            input_length=maxlen))\nmodel2.add(layers.Flatten())\nmodel2.add(layers.Dense(10,  activation=\"relu\"))\nmodel2.add(layers.Dense(1, activation=\"sigmoid\"))\n\n\nmodel2.compile(loss=\"binary_crossentropy\",\n               optimizer=\"adam\", metrics=[\"accuracy\"])\nmodel2.summary()",
+        "history = model2.fit(X_train, y_train,\n                     epochs=2,\n                     validation_data=(X_test, y_test),\n                     batch_size=10)",
+        "loss, accuracy = model2.evaluate(X_train, y_train)\nprint(\"Training Accuracy : \", format(accuracy))\n\nloss, accuracy = model2.evaluate(X_test, y_test)\nprint(\"Test Accuracy : \", format(accuracy))",
+        "# Model 3\n\nembedding_dem = 100\n\nmodel3 = Sequential()\nmodel3.add(layers.Embedding(vocab_size, embedding_dem, input_length=maxlen))\nmodel3.add(layers.Conv1D(32, 3, activation=\"relu\"))\nmodel3.add(layers.GlobalMaxPooling1D())\nmodel3.add(layers.Dense(10,  activation=\"relu\"))\nmodel3.add(layers.Dense(1, activation=\"sigmoid\"))\n\n\nmodel3.compile(loss=\"binary_crossentropy\",\n               optimizer=\"adam\", metrics=[\"accuracy\"])",
+        "history = model3.fit(X_train, y_train,\n                     epochs=50,\n                     verbose=False,\n                     validation_data=(X_test, y_test),\n                     batch_size=10)",
+        "loss, accuracy = model3.evaluate(X_train, y_train, verbose=False,)\nprint(\"Training Accuracy : \", format(accuracy))\n\nloss, accuracy = model3.evaluate(X_test, y_test, verbose=False,)\nprint(\"Test Accuracy : \", format(accuracy))",
+        "# 32, 3 = 81.59\n# 32, 5 = 80\n# 32, 7 = 80.40\n# 64, 3 = 80.80\n# 64, 5 = 80\n# 64, 7 = 79.19\n# 128, 3 = 79.60\n# 128, 5 = 78.39\n# 128, 7 = 80.80",
+        "# Model 4\n\nembedding_dem = 100\n\nmodel4 = Sequential()\nmodel4.add(layers.Embedding(vocab_size, embedding_dem, input_length=maxlen))\nmodel4.add(layers.SimpleRNN(128, return_sequences=True))\n\nmodel4.add(layers.SimpleRNN(128))\n\nmodel4.add(layers.Dense(10, activation=\"relu\"))\n\nmodel4.add(layers.Dense(1, activation=\"softmax\"))\n\n\nmodel4.compile(loss=\"binary_crossentropy\",\n               optimizer=\"adam\", metrics=[\"accuracy\"])",
+        "history = model4.fit(X_train, y_train,\n                     epochs=10,\n                     verbose=False,\n                     validation_data=(X_test, y_test),\n                     batch_size=10)",
+        "loss, accuracy = model4.evaluate(X_train, y_train, verbose=False,)\nprint(\"Training Accuracy : \", format(accuracy))\n\nloss, accuracy = model4.evaluate(X_test, y_test, verbose=False,)\nprint(\"Test Accuracy : \", format(accuracy))",
+        "# model5 LSTM\n\n\nembedding_dem = 100\n\nmodel5 = Sequential()\nmodel5.add(layers.Embedding(vocab_size, embedding_dem, input_length=maxlen))\nmodel5.add(layers.LSTM(128, return_sequences=True))\nmodel5.add(layers.Dropout(0.2))\nmodel5.add(layers.LSTM(128))\n\nmodel5.add(layers.Dense(10, activation=\"relu\"))\n\nmodel5.add(layers.Dense(1, activation=\"softmax\"))\n\nmodel5.compile(loss=\"binary_crossentropy\",\n               optimizer=\"adam\", metrics=[\"accuracy\"])\nmodel5.summary()",
+        "history = model5.fit(X_train, y_train,\n                     epochs=10,\n\n                     validation_data=(X_test, y_test),\n                     batch_size=10)",
+        "loss, accuracy = model5.evaluate(X_train, y_train, verbose=False,)\nprint(\"Training Accuracy : \", format(accuracy))\n\nloss, accuracy = model5.evaluate(X_test, y_test, verbose=False,)\nprint(\"Test Accuracy : \", format(accuracy))",
+        ""
+    ]
+}
