@@ -1,6 +1,6 @@
 import json
 
-file_name = "/Users/vaisakh/programs/Notebooks/lab/raw/SentimentalAnalysis.py"
+file_name = "/Users/vaisakh/programs/Notebooks/lab/raw/Digit_RNN.py"
 
 
 def init_cell(file_name):
@@ -12,4 +12,4 @@ def init_cell(file_name):
     return cells
 
 
-json.dump({"sentiment": init_cell(file_name)}, open("tmp.json", 'w'), indent=4)
+json.dump({"digit-rnn": init_cell(file_name)}, open("tmp.json", 'w'), indent=4)
